@@ -1,0 +1,21 @@
+name: Notify Old PRs
+description: A custom action to notify about PRs older than 7 days.
+inputs:
+  github_token:
+    description: "GitHub token for API access"
+    required: true
+  slack_bot_token:
+    description: "Slack bot token for notifications"
+    required: true
+  slack_channel:
+    description: "Slack channel to post notifications"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: python scripts/notify_old_prs.py
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
+        SLACK_CHANNEL: ${{ inputs.slack_channel }}
