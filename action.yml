@@ -4,11 +4,13 @@ inputs:
   github_token:
     description: "GitHub token for API access"
     required: true
+  github_repository:
+    description: "Github repository path e.g. 'AlmSmartDoctor/SmartDoctorCrm'"
   slack_bot_token:
     description: "Slack bot token for notifications"
     required: true
-  slack_channel:
-    description: "Slack channel to post notifications"
+  repo_slack_channel_map:
+    description: "A dictionary-like string mapping repository names to their corresponding Slack channel IDs."
     required: true
 runs:
   using: "composite"
@@ -17,5 +19,6 @@ runs:
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITHUB_REPOSITORY: ${{inputs.github_repository}}
         SLACK_BOT_TOKEN: ${{ inputs.slack_bot_token }}
-        SLACK_CHANNEL: ${{ inputs.slack_channel }}
+        REPO_SLACK_CHANNEL_MAP: ${{ inputs.repo_slack_channel_map }}
