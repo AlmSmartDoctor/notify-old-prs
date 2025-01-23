@@ -15,7 +15,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: python scripts/notify_old_prs.py
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Run Python script
+      run: python scripts/notify_old_prs.py
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
