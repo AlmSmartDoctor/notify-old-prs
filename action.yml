@@ -21,6 +21,7 @@ runs:
         python-version: '3.10'
 
     - name: Run Python script
+      working-directory: ${{ github.action_path }}
       run: python scripts/notify_old_prs.py
       shell: bash
       env:
