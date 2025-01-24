@@ -1,4 +1,4 @@
-name: Notify Old PRs
+name: notify-old-prs
 description: A custom action to notify about PRs older than 7 days.
 inputs:
   github_token:
