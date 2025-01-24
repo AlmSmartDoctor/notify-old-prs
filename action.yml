@@ -27,6 +27,7 @@ runs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
+      shell: bash
 
     - name: Run Python script
       run: python ${{ github.action_path }}/scripts/notify_old_prs.py
