@@ -2,18 +2,20 @@ import os
 import json
 import requests
 from datetime import datetime, timedelta
+from typing import Dict, List, Tuple, Any
 
-def get_environment_variables():
+def get_environment_variables() -> Tuple[str, str, str, Dict[str, str]]:
     github_token = os.environ["GITHUB_TOKEN"]
     repo_path = os.environ["GITHUB_REPOSITORY"]
     slack_bot_token = os.environ["SLACK_BOT_TOKEN"]
     slack_channel_dict = json.loads(os.environ["REPO_SLACK_CHANNEL_MAP"])
+
     return github_token, repo_path, slack_bot_token, slack_channel_dict
 
-def calculate_date_days_ago(days):
+def calculate_date_days_ago(days: int) -> datetime:
     return datetime.now() - timedelta(days=days)
 
-def get_github_open_prs(repo_path, github_token):
+def get_github_open_prs(repo_path: str, github_token: str) -> List[Dict[str, Any]]:
     headers = {
         "Authorization": f"Bearer {github_token}",
         "Accept": "application/vnd.github.v3+json"
@@ -23,15 +25,15 @@ def get_github_open_prs(repo_path, github_token):
     response.raise_for_status()
     return response.json()
 
-def filter_old_prs(pulls, threshold_date):
+def filter_old_prs(pulls: List[Dict[str, Any]], threshold_date: datetime) -> List[Dict[str, Any]]:
     old_pulls = []
     for pr in pulls:
         pr_created_at = datetime.strptime(pr["created_at"], "%Y-%m-%dT%H:%M:%SZ")
-        if pr_created_at < threshold_date:
-            old_pulls.append(pr["html_url"])
+        if pr_created_at <= threshold_date:
+            old_pulls.append(pr)
     return old_pulls
 
-def send_slack_message(slack_bot_token, slack_channel_id, message):
+def send_slack_message(slack_bot_token: str, slack_channel_id: str, message: str) -> None:
     slack_api_url = "https://slack.com/api/chat.postMessage"
     payload = {
         "channel": slack_channel_id,
@@ -47,17 +49,27 @@ def send_slack_message(slack_bot_token, slack_channel_id, message):
     if not slack_data.get("ok"):
         raise Exception(f"Slack API Error: {slack_data}")
 
-def main():
+def build_message(old_pulls: List[Dict[str, Any]]) -> str:
+    message = "*다음 Pull Request들은 7일 이상 오픈 상태입니다:*\n"
+    for i, pr in enumerate(old_pulls, start=1):
+        pr_title = pr["title"]
+        pr_url = pr["html_url"]
+        pr_created_at_str = pr["created_at"]
+        pr_created_at_dt = datetime.strptime(pr_created_at_str, "%Y-%m-%dT%H:%M:%SZ")
+        days_open = (datetime.now() - pr_created_at_dt).days
+
+        message += (
+            f"{i}. <{pr_url}|{pr_title}>\n"
+            f"   └ *열린 날짜*: {pr_created_at_dt.strftime('%Y-%m-%d %H:%M')} "
+            f"({days_open}일 전)\n\n"
+        )
+    
+    return message
+
+def main() -> None:
     github_token, repo_path, slack_bot_token, slack_channel_dict = get_environment_variables()
-    print(f"slack_channel_dict: {slack_channel_dict}")
-    print(f"keys: {slack_channel_dict.keys()}")
-    
     repo_name = repo_path.split("/")[1].strip()
-    print(f"repo_name: {repo_name}")
-    print(f"type of repo_name: {type(repo_name)}")
-    
     slack_channel_id = slack_channel_dict.get(str(repo_name), "C07HM1YH0H4")
-    print(f"slack_channel_id: {slack_channel_id}")
 
     seven_days_ago = calculate_date_days_ago(7)
     pulls = get_github_open_prs(repo_path, github_token)
@@ -67,12 +79,8 @@ def main():
         print("7일 이상 된 오픈 PR이 없습니다.")
         return
 
-    message = "*다음 Pull Request들은 7일 이상 오픈 상태입니다:*\n"
-    for pr_url in old_pulls:
-        message += f"- {pr_url}\n"
-
+    message = build_message(old_pulls)
     send_slack_message(slack_bot_token, slack_channel_id, message)
 
 if __name__ == "__main__":
     main()
-
