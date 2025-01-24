@@ -51,6 +51,7 @@ def main():
     github_token, repo_path, slack_bot_token, slack_channel_dict = get_environment_variables()
     repo_name = repo_path.split("/")[1]
     slack_channel_id = slack_channel_dict[repo_name]
+    print(f"slack_channel_id: {slack_channel_id}")
 
     seven_days_ago = calculate_date_days_ago(7)
     pulls = get_github_open_prs(repo_path, github_token)
