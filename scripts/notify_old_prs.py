@@ -52,10 +52,12 @@ def main():
     print(f"slack_channel_dict: {slack_channel_dict}")
     print(f"keys: {slack_channel_dict.keys()}")
     
-    repo_name = repo_path.split("/")[1]
+    repo_name = repo_path.split("/")[1].strip()
+    print(f"repo_name: {repo_name}")
     print(f"type of repo_name: {type(repo_name)}")
     
     slack_channel_id = slack_channel_dict.get(str(repo_name), "C07HM1YH0H4")
+    print(f"slack_channel_id: {slack_channel_id}")
 
     seven_days_ago = calculate_date_days_ago(7)
     pulls = get_github_open_prs(repo_path, github_token)
