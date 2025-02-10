@@ -14,7 +14,7 @@ REPOS: Dict[str, List[str]] = {
         "smartdoctor-api", "reservation-platform-api", "unite-api",
         "Yeogiya-API-Server", "cashdoc-hospital-event-prisma", "quiz-api",
         "cash-review-api", "SmartSurvey-API-Server", "message-cron",
-        "cash-review-cms", "smart-inquiry", "cashdoc-serverless"
+        "smart-inquiry", "cashdoc-serverless"
     ],
     "Frontend": [
         "cash-review", "Yeogiya-User-Next", "cashdoc-webview",
