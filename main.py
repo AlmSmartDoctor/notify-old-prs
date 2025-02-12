@@ -4,7 +4,8 @@ from config.repos import ORGANIZATION, REPOS
 from src.clients.github import GitHubClient
 from src.clients.slack import SlackClient
 from src.services.pr_service import PRService
-from src.utils.date import calculate_date_days_ago, filter_old_prs
+from src.utils.date import calculate_date_days_ago
+from src.utils.filter import filter_old_prs, filter_draft_prs
 
 def get_environment_variables():
     return (
@@ -24,7 +25,7 @@ def main() -> None:
         for repo_title in repo_titles:
             try:
                 pulls = github_client.get_open_prs(f"{ORGANIZATION}/{repo_title}")
-                old_pulls = filter_old_prs(pulls, seven_days_ago)
+                old_pulls = filter_old_prs(filter_draft_prs(pulls), seven_days_ago)
                 for pr in old_pulls:
                     pr["group"] = group
                 all_old_pulls.extend(old_pulls)
