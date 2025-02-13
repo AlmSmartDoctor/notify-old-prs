@@ -24,6 +24,7 @@ jobs:
         
     - name: Run notification script
       env:
+        PYTHONPATH: ${{ github.workspace }}
         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         SLACK_CHANNEL_IDS: ${{ secrets.SLACK_CHANNEL_IDS }}
