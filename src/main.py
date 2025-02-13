@@ -1,6 +1,6 @@
 import os
 import json
-from config.repos import ORGANIZATION, REPOS
+from ..config.repos import ORGANIZATION, REPOS
 from src.clients.github import GitHubClient
 from src.clients.slack import SlackClient
 from src.services.pr_service import PRService
